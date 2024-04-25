@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Noting</string>
+    <string name="List">List</string>
+    <string name="Group">Group</string>
+    <string name="Canlader">Canlader</string>
+    <string name="Myprofile">Myprofile</string>
+    <string name="Mode">Mode</string>
+    <string name="Setting">Setting</string>
+    <string name="Week">Week</string>
+    <string name="Month">Month</string>
+    <string name="AddGroup">AddGroup</string>
+    <string name="AddFriend">AddFriend</string>
+    <string name="Searching">Search by letter</string>
+    <string name="Addtitle">Information</string>
+
+
+
+</resources>
