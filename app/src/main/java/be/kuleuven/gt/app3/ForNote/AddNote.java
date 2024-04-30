@@ -1,6 +1,6 @@
 package be.kuleuven.gt.app3.ForNote;
 
-
+//add
 import android.content.Context;
 
 import static android.media.ThumbnailUtils.createImageThumbnail;
@@ -9,8 +9,12 @@ import static androidx.core.content.ContextCompat.getSystemService;
 
 import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+
+import android.view.KeyEvent;
 import android.view.inputmethod.InputMethodManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,7 +40,7 @@ public class AddNote extends Fragment{
     private EditText title;
     private EditText word;
     private NoteUnit mNote;
-    private NoteUnit pNote;
+    private NoteUnit pNote;// the note pass to fragment
     private Calendar calendar;
     private int day;
     private int month;
@@ -85,7 +89,7 @@ public class AddNote extends Fragment{
         Log.i("Taggg","oncreateViewAddNote");
         view = inflater.inflate(R.layout.fragment_add_note, container, false);
         initData();
-        showDetail();
+        //showDetail();
 
 
 
@@ -126,10 +130,34 @@ public class AddNote extends Fragment{
             }
         });
 
+        //back to information page and save the change
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                Log.i("Taggg","enddd");
+                Bundle bundle = new Bundle();
+                setInfo();
+                TopassData(mNote);
+                bundle.putSerializable("note",mNote);
+                NoteInfo noteInfo = new NoteInfo();
+                noteInfo.setArguments(bundle);
+
+                Log.i("Taggg","info");
+                requireActivity().getSupportFragmentManager().popBackStack();
+
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.frame, noteInfo,null).addToBackStack(null)
+                        .commit();
+
+            }
+        });
 
 
         return view;
     }
+
+
+
 
 
     private void callGallery(){
@@ -147,20 +175,23 @@ public class AddNote extends Fragment{
         bottomNavigationView.setVisibility(View.INVISIBLE);
 
         mNote = new NoteUnit();
-        toolbar.inflateMenu(R.menu.menu_addnote);
+        pNote = new NoteUnit();
+
+        toolbar.inflateMenu(R.menu.menu_addnote); // inflate the toolbar's menu(contains the menu item)
 
         calendar = Calendar.getInstance();
 
         bundle = getArguments();
         if (bundle != null ) {
-            mNote = (NoteUnit) bundle.getSerializable("note");
+            pNote = (NoteUnit) bundle.getSerializable("note");
         }
 
 
-        if(mNote.getFlag()==1){
+        if(pNote.getFlag()==1){
             toolbar.setTitle("Edit Note");
-            showDetail();
-        } else if (mNote.getFlag()==0) {
+            mNote.setFlag(1);
+            showDetail(pNote);
+        } else {
             toolbar.setTitle("New Note");
         }
 
@@ -194,11 +225,10 @@ public class AddNote extends Fragment{
         }
     }
 
-    public void showDetail(){
-        title.setText(mNote.getTitle());
-        word.setText(mNote.getContent());
+    public void showDetail(NoteUnit noteUnit){
+        title.setText(noteUnit.getTitle());
+        word.setText(noteUnit.getContent());
     }
-
 
 
 

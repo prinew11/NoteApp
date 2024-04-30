@@ -14,6 +14,7 @@ public class NoteUnit implements Serializable{
     private int isEncrypt ;//是否加密，0未加密，1加密
     private String createTime;
     private String updateTime;
+    private int position;//position in the arraylist
 
     public NoteUnit(){
         flag = 0;
@@ -22,6 +23,9 @@ public class NoteUnit implements Serializable{
     public int getId() {
         return id;
     }
+
+    public int getPosition(){return position;}
+    public void setPosition(int position){this.position = position;}
 
     public void setId(int id) {
         this.id = id;

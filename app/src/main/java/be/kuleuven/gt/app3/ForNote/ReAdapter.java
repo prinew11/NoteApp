@@ -70,6 +70,8 @@ public class ReAdapter extends RecyclerView.Adapter<ReAdapter.myViewHolder> {
         this.Notes = notes;
     }
 
+    public ArrayList<NoteUnit> getNotes(){return Notes;}
+
     public int getItemViewType(int position){
         if(position < Notes.size()){
             Log.i("Taggg","data");
@@ -107,6 +109,7 @@ public class ReAdapter extends RecyclerView.Adapter<ReAdapter.myViewHolder> {
     @Override
     public void onBindViewHolder(myViewHolder holder, int position) {
         final NoteUnit noteUnit = Notes.get(position);
+        noteUnit.setPosition(position);// set the note's position in the arraylist
         //将数据保存在itemView的Tag中，以便点击时进行获取
         holder.itemView.setTag(noteUnit);
         //add text to the note according to array's data
@@ -127,6 +130,13 @@ public class ReAdapter extends RecyclerView.Adapter<ReAdapter.myViewHolder> {
         //add data to the array
         Notes.add(note);
         notifyItemInserted(Notes.size());
+    }
+
+    public void editCard(NoteUnit noteUnit){
+        int position = noteUnit.getPosition();
+        Notes.set(position,noteUnit);
+        notifyItemChanged(position);
+
     }
 
 

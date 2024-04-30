@@ -132,6 +132,7 @@ public class Note extends Fragment implements AddNote.passData {
                 bundle.putSerializable("note",noteUnit);
                 NoteInfo noteInfo = new NoteInfo();
                 noteInfo.setArguments(bundle);
+                Toast.makeText(getContext(), noteUnit.getTitle(), Toast.LENGTH_SHORT).show();
                 getActivity().getSupportFragmentManager().beginTransaction()
                         .replace(R.id.frame, noteInfo,null).addToBackStack(null)
                         .commit();
@@ -153,15 +154,26 @@ public class Note extends Fragment implements AddNote.passData {
 
 
     public void DataPasser(NoteUnit mNote){
-        Toast.makeText(getContext(), mNote.getTitle(), Toast.LENGTH_SHORT).show();
         Log.i("Taggg",mNote.getId()+"afpasser");
         if(mNote.getFlag()==0){
             mNote.setFlag(1);
+            Toast.makeText(getContext(), mNote.getTitle(), Toast.LENGTH_SHORT).show();
             adapter.addCard(mNote);
+        } else if (mNote.getFlag()==1) {
+            Toast.makeText(getContext(), "uploaded", Toast.LENGTH_SHORT).show();
+            adapter.editCard(mNote);
         }
 
     }
 
+    //store the note int the database when close the app
+    public void onExitToStore(){
 
-    
+
+    }
+
+
+
+
+
 }

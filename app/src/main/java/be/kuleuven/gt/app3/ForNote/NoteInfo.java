@@ -17,6 +17,8 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
@@ -121,6 +123,17 @@ public class NoteInfo extends Fragment {
                 return false;
             }
         });
+
+        //back to note page by phone's back
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                Log.i("Taggg","enddd");
+                bottomNavigationView.setVisibility(View.VISIBLE);
+                requireActivity().getSupportFragmentManager().popBackStack();
+            }
+        });
+
         return view;
     }
 
