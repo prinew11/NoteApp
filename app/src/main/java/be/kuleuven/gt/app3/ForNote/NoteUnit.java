@@ -3,13 +3,13 @@ package be.kuleuven.gt.app3.ForNote;
 import java.io.Serializable;
 
 public class NoteUnit implements Serializable{
-    private int id;
+    private int id;//primary key
     private int flag;//0--new,1--old
     private String title;
     private String content;
-    private int groupId;//分类ID
-    private String groupName;//分类名称
-    private int type;//笔记类型，1纯文本，2Html，3Markdown
+    private int groupId;
+    private String groupName;
+    private int type;//note type，1.normal note，2list
     private String bgColor;//背景颜色，存储颜色代码
     private int isEncrypt ;//是否加密，0未加密，1加密
     private String createTime;
@@ -17,7 +17,12 @@ public class NoteUnit implements Serializable{
     private int position;//position in the arraylist
 
     public NoteUnit(){
-        flag = 0;
+        //default setting
+        flag = 1;
+        isEncrypt = 0;
+        bgColor = "#fffffff";
+        groupId = 1;
+        groupName = "default";
     }
 
     public int getId() {

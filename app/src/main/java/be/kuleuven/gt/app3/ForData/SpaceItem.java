@@ -6,6 +6,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+// set the space of the cardview
 public class SpaceItem extends RecyclerView.ItemDecoration{
     private int space;
 

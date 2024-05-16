@@ -1,6 +1,6 @@
 package be.kuleuven.gt.app3.ForNote;
 
-//add
+
 import android.content.Context;
 
 import static android.media.ThumbnailUtils.createImageThumbnail;
@@ -54,6 +54,8 @@ public class AddNote extends Fragment{
     private LinearLayout linearLayout;
     private BottomNavigationView bottomNavigationView;
 
+    private String flag;
+
 
 
     public AddNote() {
@@ -75,7 +77,6 @@ public class AddNote extends Fragment{
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.i("Taggg","oncreateAddNote");
         super.onCreate(savedInstanceState);
 
     }
@@ -86,7 +87,6 @@ public class AddNote extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        Log.i("Taggg","oncreateViewAddNote");
         view = inflater.inflate(R.layout.fragment_add_note, container, false);
         initData();
         //showDetail();
@@ -116,10 +116,11 @@ public class AddNote extends Fragment{
 
                     Bundle bundle1 = new Bundle();
                     bundle1.putSerializable("note",mNote);
+                    bundle1.putString("flag",flag);
                     NoteInfo noteInfo = new NoteInfo();
                     noteInfo.setArguments(bundle1);
 
-                    Log.i("Taggg","info");
+
                     requireActivity().getSupportFragmentManager().popBackStack();
 
                     getActivity().getSupportFragmentManager().beginTransaction()
@@ -139,10 +140,9 @@ public class AddNote extends Fragment{
                 setInfo();
                 TopassData(mNote);
                 bundle.putSerializable("note",mNote);
+                bundle.putString("flag","edited");
                 NoteInfo noteInfo = new NoteInfo();
                 noteInfo.setArguments(bundle);
-
-                Log.i("Taggg","info");
                 requireActivity().getSupportFragmentManager().popBackStack();
 
                 getActivity().getSupportFragmentManager().beginTransaction()
@@ -183,16 +183,23 @@ public class AddNote extends Fragment{
 
         bundle = getArguments();
         if (bundle != null ) {
-            pNote = (NoteUnit) bundle.getSerializable("note");
+            flag = bundle.getString("flag");
+            Log.i("tagga",flag);
+            if(bundle.getSerializable("note")!=null){
+                pNote = (NoteUnit) bundle.getSerializable("note");
+            }
         }
 
 
-        if(pNote.getFlag()==1){
+        if(flag.equals("edited")){
             toolbar.setTitle("Edit Note");
             mNote.setFlag(1);
+            mNote.setId(pNote.getId());
             showDetail(pNote);
         } else {
+            mNote.setFlag(0);
             toolbar.setTitle("New Note");
+            showDetail(pNote);
         }
 
 
@@ -212,6 +219,9 @@ public class AddNote extends Fragment{
         mNote.setUpdateTime(editDate);
         mNote.setContent(word.getText().toString());
         mNote.setTitle(title.getText().toString());
+        mNote.setType(1);
+       if(flag.equals("new")){mNote.setCreateTime(editDate);}
+
         scontext = word.getText().toString();
         stitle = title.getText().toString();
     }

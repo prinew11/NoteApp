@@ -31,6 +31,11 @@ public class liteDatabase extends SQLiteOpenHelper{
             //create a default group
             db.execSQL("insert into db_group(g_name, g_order, g_color, g_encrypt, g_create_time, g_update_time) " +
                     "values(?,?,?,?,?,?)", new String[]{"default", "1", "#FFFFFF", "0", ForString.date2string(new Date()), ForString.date2string(new Date())});
+
+            db.execSQL("insert into db_group(g_name, g_order, g_color, g_encrypt, g_create_time, g_update_time) " +
+                    "values(?,?,?,?,?,?)", new String[]{"testdefalut", "2", "#FFFFFF", "0", ForString.date2string(new Date()), ForString.date2string(new Date())});
+
+
         }
 
         @Override

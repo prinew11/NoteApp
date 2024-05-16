@@ -2,6 +2,7 @@ package be.kuleuven.gt.app3;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import androidx.fragment.app.Fragment;
 
@@ -17,14 +18,15 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import be.kuleuven.gt.app3.ForCalendar.Canlader;
 import be.kuleuven.gt.app3.ForGroup.Group;
 import be.kuleuven.gt.app3.ForNote.Note;
+import be.kuleuven.gt.app3.ForNote.NoteUnit;
 import be.kuleuven.gt.app3.ForProfile.Profile;
+import be.kuleuven.gt.app3.storeAndupdate.storeNote;
 
 public class MainActivity extends AppCompatActivity {
 
     private Fragment[] frags = new Fragment[4];
     private BottomNavigationView Bottomnav;
     private int fragFlag = 0;
-
 
 
     @Override
@@ -34,8 +36,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
         Bottomnav = findViewById(R.id.bottomNavigationView);
-
-
         initFragment();
         selectFragment();
 
@@ -105,6 +105,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void hideNav(){
+        Bottomnav.setVisibility(View.GONE);
+    }
+
+    public void showNav(){
+        Bottomnav.setVisibility(View.VISIBLE);
+    }
 
 }
 

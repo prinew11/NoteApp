@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import be.kuleuven.gt.app3.ForData.ForString;
+import be.kuleuven.gt.app3.MainActivity;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -45,6 +46,7 @@ public class NoteInfo extends Fragment {
     private Bundle bundle;
     private View view;
     private BottomNavigationView bottomNavigationView;
+    private String flag;
 
 
     public NoteInfo(){
@@ -77,9 +79,7 @@ public class NoteInfo extends Fragment {
         view = inflater.inflate(R.layout.fragment_add_note, container, false);
         initData();
 
-        if (bottomNavigationView != null) {
-            bottomNavigationView.setVisibility(View.INVISIBLE);
-        }
+        ((MainActivity)getActivity()).hideNav();
         toolbar.setTitle("Information");
         title.setEnabled(false);
         word.setEnabled(false);
@@ -92,6 +92,7 @@ public class NoteInfo extends Fragment {
             title.setText(mNote.getTitle());
             word.setText(mNote.getContent());
 
+            flag = (String)bundle.getString("flag");
 
         }
 
@@ -100,7 +101,7 @@ public class NoteInfo extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.i("Taggg","click");
-                bottomNavigationView.setVisibility(View.VISIBLE);
+                ((MainActivity)getActivity()).showNav();
 
                 requireActivity().getSupportFragmentManager().popBackStack();
             }
@@ -112,6 +113,7 @@ public class NoteInfo extends Fragment {
             public boolean onMenuItemClick(MenuItem item) {
                if (item.getItemId() == R.id.editIcon2) {
                     bundle.putSerializable("note",mNote);
+                    bundle.putString("flag",flag);
                     AddNote addNote = new AddNote();
                     addNote.setArguments(bundle);
 
@@ -129,7 +131,8 @@ public class NoteInfo extends Fragment {
             @Override
             public void handleOnBackPressed() {
                 Log.i("Taggg","enddd");
-                bottomNavigationView.setVisibility(View.VISIBLE);
+//                ((MainActivity)getActivity()).showNav();
+
                 requireActivity().getSupportFragmentManager().popBackStack();
             }
         });
@@ -145,7 +148,7 @@ public class NoteInfo extends Fragment {
         mNote = new NoteUnit();
         toolbar.inflateMenu(R.menu.menu_noteinfo);
         bottomNavigationView = getActivity().findViewById(R.id.bottomNavigationView);
-        bottomNavigationView.setVisibility(View.INVISIBLE);
+        ((MainActivity)getActivity()).hideNav();
         bundle = getArguments();
     }
 

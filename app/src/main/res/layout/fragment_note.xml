@@ -24,7 +24,7 @@
         app:title="@string/List" />
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar_list2"
+        android:id="@+id/toolbar_search1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="#FFA407"
@@ -36,31 +36,33 @@
         app:layout_constraintTop_toBottomOf="@+id/toolbar_list" />
 
     <FrameLayout
-        android:id="@+id/frame_search"
+        android:id="@+id/frame_search1"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/toolbar_list2"
-        app:layout_constraintEnd_toEndOf="@id/toolbar_list2"
-        app:layout_constraintStart_toStartOf="@id/toolbar_list2"
+        app:layout_constraintBottom_toBottomOf="@+id/toolbar_search1"
+        app:layout_constraintEnd_toEndOf="@id/toolbar_search1"
+        app:layout_constraintStart_toStartOf="@id/toolbar_search1"
         app:layout_constraintTop_toBottomOf="@id/toolbar_list">
 
 
     </FrameLayout>
 
     <androidx.appcompat.widget.SearchView
-        android:id="@+id/searchView"
+        android:id="@+id/searchView1"
         android:layout_width="0dp"
         android:layout_height="45dp"
         android:layout_gravity="center"
         android:background="@drawable/shapeofsearch"
         android:theme="@style/MySearchViewStyle"
         app:defaultQueryHint="@string/Searching"
-        app:iconifiedByDefault="false"
-        app:layout_constraintBottom_toBottomOf="@+id/toolbar_list2"
-        app:layout_constraintEnd_toEndOf="@+id/toolbar_list2"
-        app:layout_constraintStart_toStartOf="@+id/toolbar_list2"
+        app:layout_constraintBottom_toBottomOf="@+id/toolbar_search1"
+        app:layout_constraintEnd_toEndOf="@+id/toolbar_search1"
+        app:layout_constraintStart_toStartOf="@+id/toolbar_search1"
         app:layout_constraintTop_toBottomOf="@+id/toolbar_list"
-        app:searchHintIcon="@null">
+        app:searchHintIcon="@null"
+        app:iconifiedByDefault="false"
+        app:queryBackground="@android:color/transparent"
+        >
 
     </androidx.appcompat.widget.SearchView>
 
@@ -78,15 +80,49 @@
         app:layout_constraintHorizontal_bias="0.954"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+    <FrameLayout
+        android:id="@+id/recyclerViewContainers"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@color/lightgrey"
-        android:padding="8dp"
+        app:layout_constraintBottom_toTopOf="@id/deleteNav"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_search1"
+        >
+
+    <!-- 遮罩层 -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViews"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/lightgrey"
+            android:padding="8dp"
+            app:layout_constraintBottom_toTopOf="@id/deleteNav"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar_search1" />
+
+        <View
+            android:id="@+id/overlays"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/lightgrey"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="parent" />
+    </FrameLayout>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/deleteNav"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar_list2" />
+        app:layout_constraintTop_toBottomOf="@id/recyclerViewContainers"
+        app:menu="@menu/menu_delete" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
