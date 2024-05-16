@@ -332,6 +332,7 @@ public class Note extends Fragment implements AddNote.passData {
         if (adapter.getSelect().size() < Notes.size()) {
             ArrayList<NoteUnit> selectSet = new ArrayList<>(Notes);
             // 创建一个新的 ArrayList 对象，并将 Notes 中的所有元素添加到其中
+            //create a arraylist and store selected Note in it
             adapter.setSelect(selectSet);
             adapter.notifyDataSetChanged();
 
