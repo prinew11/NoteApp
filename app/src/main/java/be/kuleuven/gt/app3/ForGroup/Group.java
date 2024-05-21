@@ -16,6 +16,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import be.kuleuven.gt.app3.ForNote.AddNote;
+import be.kuleuven.gt.app3.ForNote.NoteUnit;
+import be.kuleuven.gt.app3.MainActivity;
+import be.kuleuven.gt.app3.storeAndupdate.storeNote;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -32,7 +36,8 @@ public class Group extends Fragment {
     private View view;
     private ListView listView;
     private GroupAdapter groupAdapter;
-    private ArrayList<GroupUnit> Groups = new ArrayList<>();
+    private ArrayList<GroupUnit> Groups;
+    private storeNote storeNote;
 
     public Group() {
         // Required empty public constructor
@@ -47,7 +52,7 @@ public class Group extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.i("Taggg","onCreate");
+        Log.i("Taggg","onCreate123");
         super.onCreate(savedInstanceState);
 
     }
@@ -65,22 +70,19 @@ public class Group extends Fragment {
         view = inflater.inflate(R.layout.fragment_group, container, false);
         initdata();
 
-        ArrayList<FriendUnit> friends1 = new ArrayList<>();
-        friends1.add(new FriendUnit("Friend 1"));
-        friends1.add(new FriendUnit("Friend 2"));
-        Groups.add(new GroupUnit("Group 1", friends1));
-        Groups.add(new GroupUnit("Group 2z", friends1));
-
         // 初始化适配器并设置给 ListView
+        //init adapter and set it to listView
         groupAdapter = new GroupAdapter(getContext(), Groups);
         listView.setAdapter(groupAdapter);
-
 
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.group_add) {
-                    Log.i("Taggg", "add");
+//                    addFriend();
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.frame,new addFriendPage(),null).addToBackStack(null)
+                            .commit();
                 }
                 return false;
             }
@@ -90,10 +92,26 @@ public class Group extends Fragment {
 
     public void initdata(){
         toolbar = view.findViewById(R.id.toolbar_group);
+        storeNote = new storeNote(this.getContext());
+        ((MainActivity)getActivity()).showNav();
         setHasOptionsMenu(true);
         toolbar.inflateMenu(R.menu.menu_group);
         listView = view.findViewById(R.id.listview_group);
+        Groups = storeNote.getAllGroupInfo();
+    }
 
+    public void refreshList(){
+        Groups = storeNote.getAllGroupInfo();
+        groupAdapter.setGroups(Groups);
+        groupAdapter.notifyDataSetChanged();
+    }
+
+    public void addFriend(){
+        FriendUnit f = new FriendUnit();
+        f.setLable("");
+        f.setName("name");
+        storeNote.addNewFriends(f);
+        refreshList();
     }
 
 

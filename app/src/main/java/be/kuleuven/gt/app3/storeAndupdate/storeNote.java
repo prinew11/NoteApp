@@ -20,6 +20,8 @@ import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
 import be.kuleuven.gt.app3.ForData.ForString;
+import be.kuleuven.gt.app3.ForGroup.FriendUnit;
+import be.kuleuven.gt.app3.ForGroup.GroupUnit;
 import be.kuleuven.gt.app3.ForNote.NoteUnit;
 
 public class storeNote {
@@ -217,6 +219,147 @@ public class storeNote {
         return outcome;
     }
 
+    public long addNewFriends(FriendUnit friend) {
+        SQLiteDatabase db = liteDatabase.getWritableDatabase();
+        String friendSql = "INSERT INTO db_friends(f_name, f_label, f_create_time) VALUES (?, ?, ?)";
+        String relationshipSql = "INSERT INTO db_relationship(rfriend_id, rgroup_id) VALUES (?, ?)";
+        long ret = 0;
+        db.beginTransaction();
+
+        try {
+            SQLiteStatement friendStat = db.compileStatement(friendSql);
+            friendStat.bindString(1, friend.getName());
+            friendStat.bindString(2, friend.getLabel());
+            friendStat.bindString(3, ForString.date2string(new Date()));
+
+            // Insert new friend
+            ret = friendStat.executeInsert();
+
+            // If the friend was successfully inserted, add to default group (assuming default group id is 1)
+            if (ret != -1) {
+                SQLiteStatement relationshipStat = db.compileStatement(relationshipSql);
+                relationshipStat.bindLong(1, ret); // Use the newly inserted friend's ID
+                relationshipStat.bindLong(2, 1); // Assuming default group ID is 1
+                relationshipStat.executeInsert();
+            }
+
+            db.setTransactionSuccessful();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            db.endTransaction();
+            db.close();
+        }
+        return ret;
+    }
+
+    public void editFriend(FriendUnit friend){
+        SQLiteDatabase db = liteDatabase.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("f_name", friend.getName());
+        values.put("f_label", friend.getLabel());
+        db.update("db_friends", values, "f_id=?", new String[]{friend.getID()+""});
+        db.close();
+    }
+
+    public void editGroup(GroupUnit group){
+        SQLiteDatabase db = liteDatabase.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("fg_name", group.getGroupName());
+        values.put("fg_order", group.getOrder());
+        db.update("db_friendsgroup", values, "fg_id=?", new String[]{group.getID()+""});
+        db.close();
+    }
+
+
+    public long addGroup(String name){
+        SQLiteDatabase db = liteDatabase.getWritableDatabase();
+        String sql = "insert into db_friendsgroup(fg_name,fg_order,fg_create_time) " +
+                "values(?,?,?)";
+
+        long ret = 0;
+        //sql = "insert into ex_user(eu_login_name,eu_create_time,eu_update_time) values(?,?,?)";
+        SQLiteStatement stat = db.compileStatement(sql);
+        db.beginTransaction();
+        try {
+            stat.bindString(1, name);
+            stat.bindString(2, "2");
+            stat.bindString(3, ForString.date2string(new Date()));
+            ret = stat.executeInsert();
+            db.setTransactionSuccessful();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            db.endTransaction();
+            db.close();
+        }
+        return ret;
+    }
+
+    @SuppressLint("Range")
+    public ArrayList<GroupUnit> getAllGroupInfo() {
+        SQLiteDatabase db = liteDatabase.getWritableDatabase();
+        ArrayList<GroupUnit> Groups = new ArrayList<>();
+        Cursor groupCursor = null;
+        Cursor friendCursor = null;
+
+        try {
+            // 获取所有组的信息
+            String groupSql = "SELECT * FROM db_friendsgroup ORDER BY fg_create_time ASC";
+            groupCursor = db.rawQuery(groupSql, null);
+
+            // 遍历每个组
+            while (groupCursor.moveToNext()) {
+                GroupUnit groupUnit = new GroupUnit();
+                int groupId = groupCursor.getInt(groupCursor.getColumnIndex("fg_id"));
+                groupUnit.setId(groupId);
+                groupUnit.setGroupName(groupCursor.getString(groupCursor.getColumnIndex("fg_name")));
+                groupUnit.setOrder(groupCursor.getInt(groupCursor.getColumnIndex("fg_order")));
+                groupUnit.setDate(groupCursor.getString(groupCursor.getColumnIndex("fg_create_time")));
+
+                // 获取该组的所有好友信息
+                String friendSql = "SELECT db_friends.f_id, db_friends.f_name, db_friends.f_label, db_friends.f_create_time " +
+                        "FROM db_friends " +
+                        "JOIN db_relationship ON db_friends.f_id = db_relationship.rfriend_id " +
+                        "WHERE db_relationship.rgroup_id = ?";
+                friendCursor = db.rawQuery(friendSql, new String[]{String.valueOf(groupId)});
+                ArrayList<FriendUnit> friends = new ArrayList<>();
+
+                while (friendCursor.moveToNext()) {
+                    FriendUnit friendUnit = new FriendUnit();
+                    friendUnit.setID(friendCursor.getInt(friendCursor.getColumnIndex("f_id")));
+                    friendUnit.setName(friendCursor.getString(friendCursor.getColumnIndex("f_name")));
+                    friendUnit.setLable(friendCursor.getString(friendCursor.getColumnIndex("f_label")));
+                    friendUnit.setTime(friendCursor.getString(friendCursor.getColumnIndex("f_create_time")));
+                    friends.add(friendUnit);
+                }
+
+                groupUnit.setFriends(friends);
+                Groups.add(groupUnit);
+
+                if (friendCursor != null) {
+                    friendCursor.close();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (groupCursor != null) {
+                groupCursor.close();
+            }
+            if (friendCursor != null) {
+                friendCursor.close();
+            }
+            if (db != null) {
+                db.close();
+            }
+        }
+        return Groups;
+    }
 
 
 }

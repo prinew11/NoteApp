@@ -6,29 +6,43 @@ public class GroupUnit {
 
     private String groupName;
     private ArrayList<FriendUnit> friends;
-    private boolean isExpanded;
+    private String date;
+    private int ID;
+    private int order;
 
-    public GroupUnit(String groupName, ArrayList<FriendUnit> friends) {
-        this.groupName = groupName;
-        this.friends = friends;
-        this.isExpanded = false;
+    public GroupUnit() {
+
+
     }
 
     public String getGroupName() {
         return groupName;
     }
 
+    public void setGroupName(String groupname){groupName = groupname;}
+
+    public void setFriends(ArrayList<FriendUnit> friends){this.friends = friends;}
     public ArrayList<FriendUnit> getFriends() {
         return friends;
     }
 
-    public boolean isExpanded() {
-        return isExpanded;
+    public void addFriend(FriendUnit friend){friends.add(friend);}
+
+    public void removeFriend(int id){friends.remove(id);}
+
+    public int getOrder(){return order;}
+
+    public void setOrder(int order){this.order = order;}
+
+    public int getID(){return ID;}
+
+    public void setId(int id) {
+        this.ID = id;
     }
 
-    public void setExpanded(boolean expanded) {
-        isExpanded = expanded;
-    }
+    public String getDate(){return date;}
 
+    public void setDate(String date){this.date = date;}
 
 }
+

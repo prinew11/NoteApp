@@ -152,9 +152,7 @@ public class Note extends Fragment implements AddNote.passData {
                     searchMode();
                     searchView.setIconified(false);
                 }
-                else{
-                    //exitSearch();
-                }
+
             }
         });
 
@@ -436,12 +434,6 @@ public class Note extends Fragment implements AddNote.passData {
 
     }
 
-    public void backFromInfo(){
-        ((MainActivity)getActivity()).showNav();
-
-
-
-    }
 
 
 

@@ -54,7 +54,7 @@ public class Canlader extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        Log.i("Taggg", "onCreateView");
+        Log.i("Taggg", "onCreateView?");
         View view = inflater.inflate(R.layout.fragment_canlader, container, false);
         toolbar = view.findViewById(R.id.toolbar_canlader);
         setHasOptionsMenu(true);

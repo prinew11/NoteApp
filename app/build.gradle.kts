@@ -43,6 +43,7 @@ dependencies {
     implementation("org.greenrobot:eventbus:3.0.0")
     implementation ("io.reactivex.rxjava2:rxjava:2.2.3")
     implementation ("io.reactivex.rxjava2:rxandroid:2.1.0")
+    implementation ("com.android.volley:volley:1.1.1")
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
