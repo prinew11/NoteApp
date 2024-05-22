@@ -1,19 +1,19 @@
 package be.kuleuven.gt.app3.ForGroup;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.fragment.app.Fragment;
 
-import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,15 +21,19 @@ import android.widget.Toast;
 import be.kuleuven.gt.app3.MainActivity;
 import be.kuleuven.gt.app3.R;
 import be.kuleuven.gt.app3.storeAndupdate.getDataFromDB;
+import be.kuleuven.gt.app3.storeAndupdate.storeNote;
 
 
 public class addFriendPage extends Fragment {
     private View view;
-    private SearchView searchView;
+    private SearchView search;
     private LinearLayout linearLayout;
     private View FriendView;
     private ImageView IconView;
     private TextView FriendName;
+    private storeNote store;
+    private getDataFromDB getDataFromDB;
+    private FriendUnit addFriend;
 
 
     public addFriendPage() {
@@ -55,22 +59,24 @@ public class addFriendPage extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_add_friend_page, container, false);
+        Log.i("taggg","in");
         initdata();
 
 
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                //searchFriend(query);
-                return false;
+                Log.i("taggg",query);
+                searchFriend(query);
+                return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                return false;
+                return true;
             }
         });
-
+        Log.i("taggg","in1");
         FriendView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,6 +88,11 @@ public class addFriendPage extends Fragment {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             //addFriend instruction;
+                            store.addNewFriends(addFriend);
+                            int onlineID = getActivity().getSharedPreferences("login_prefs", Context.MODE_PRIVATE).getInt("onlineID", 0);
+                            Log.i("taggg",onlineID+"!");
+                            getDataFromDB.addFriend(getContext(), addFriend.getID(),onlineID);
+                            requireActivity().getSupportFragmentManager().popBackStack();
                         }
                     });
                 builder.setNegativeButton("No",null);
@@ -91,7 +102,7 @@ public class addFriendPage extends Fragment {
 
         });
 
-
+        Log.i("taggg","in2");
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -100,7 +111,7 @@ public class addFriendPage extends Fragment {
         });
 
 
-
+        Log.i("taggg","in3");
 
         return view;
     }
@@ -108,25 +119,34 @@ public class addFriendPage extends Fragment {
 
     public void initdata(){
         ((MainActivity)getActivity()).hideNav();
-         searchView = view.findViewById(R.id.afsearch);
          linearLayout = view.findViewById(R.id.linearLayout_friend);
+         search = view.findViewById(R.id.afsearching);
          FriendView = LayoutInflater.from(getContext()).inflate(R.layout.groupitembar,linearLayout,false);
-         IconView = view.findViewById(R.id.iconFriend);
-         FriendName = view.findViewById(R.id.ItemName);
+         IconView = FriendView.findViewById(R.id.iconFriend);
+         FriendName = FriendView.findViewById(R.id.ItemName);
+         store = new storeNote(getContext());
+         getDataFromDB = new getDataFromDB();
 
     }
 
     public void searchFriend(String account){
         getDataFromDB search = new getDataFromDB();
-        search.getGroupJson(getContext(),account,new getDataFromDB.DataCallback() {
+        search.getUserInfo(getContext(),account,new getDataFromDB.DataCallback() {
             @Override
-            public void onSuccess(String data) {
-
+            public void onSuccess(FriendUnit friendUnit) {
+                linearLayout.removeAllViews();
+                String name = friendUnit.getName();
+                int ID = friendUnit.getID();
+                String account = friendUnit.getAccount();
+                addFriend = friendUnit;
+                FriendName.setText(name);
+                linearLayout.addView(FriendView);
+                Log.i("taggg","addFriend");
             }
 
             @Override
             public void onError(String error) {
-
+                Log.i("taggg","error");
             }
         });
 

@@ -15,5 +15,10 @@
         android:icon="@android:drawable/ic_menu_info_details"
         android:title="@string/Setting"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/refresh"
+        android:icon="@android:drawable/ic_menu_rotate"
+        android:title="refresh"
+        app:showAsAction="always" />
 
 </menu>

@@ -8,47 +8,34 @@
     tools:context=".ForGroup.addFriendPage">
 
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/aftoolbar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="?attr/actionBarTheme"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <FrameLayout
         android:id="@+id/frame_afsearch"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/aftoolbar"
-        app:layout_constraintEnd_toEndOf="@id/aftoolbar"
-        app:layout_constraintStart_toStartOf="@id/aftoolbar"
-        app:layout_constraintTop_toTopOf="@+id/aftoolbar">
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/linearLayout_friend"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
 
+        <SearchView
+            android:id="@+id/afsearching"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_gravity="center"
+            android:background="@drawable/shapeofsearch"
+            android:theme="@style/MySearchViewStyle"
+            app:defaultQueryHint="Enter Friend's ID"
+            app:iconifiedByDefault="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/frame_afsearch"
+            app:layout_constraintStart_toStartOf="@+id/frame_afsearch"
+            app:layout_constraintTop_toTopOf="parent"
+            app:queryBackground="@android:color/transparent"
+            app:searchHintIcon="@null" />
     </FrameLayout>
 
-    <androidx.appcompat.widget.SearchView
-        android:id="@+id/afsearch"
-        android:layout_width="0dp"
-        android:layout_height="45dp"
-        android:layout_gravity="center"
-        android:background="@drawable/shapeofsearch"
-        android:theme="@style/MySearchViewStyle"
-        app:defaultQueryHint="Enter Friend's ID"
-        app:iconifiedByDefault="false"
-        app:layout_constraintBottom_toBottomOf="@+id/aftoolbar"
-        app:layout_constraintEnd_toEndOf="@+id/aftoolbar"
-        app:layout_constraintStart_toStartOf="@+id/aftoolbar"
-        app:layout_constraintTop_toTopOf="parent"
-        app:queryBackground="@android:color/transparent"
-        app:searchHintIcon="@null">
 
-    </androidx.appcompat.widget.SearchView>
 
     <LinearLayout
         android:id="@+id/linearLayout_friend"
@@ -58,6 +45,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/aftoolbar"></LinearLayout>
+        app:layout_constraintTop_toBottomOf="@id/frame_afsearch">
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

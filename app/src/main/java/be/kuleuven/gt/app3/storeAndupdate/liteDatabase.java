@@ -1,5 +1,6 @@
 package be.kuleuven.gt.app3.storeAndupdate;
 
+import android.content.SharedPreferences;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -14,7 +15,7 @@ import be.kuleuven.gt.app3.ForData.ForString;
 public class liteDatabase extends SQLiteOpenHelper{
         private final static String DB_NAME = "note.db";// database name
         private final static int DB_VERSION = 1;// version
-
+        private int onlineID;
         public liteDatabase(Context context) {
             super(context, DB_NAME, null, DB_VERSION);
         }
@@ -36,7 +37,7 @@ public class liteDatabase extends SQLiteOpenHelper{
                     "fg_name varchar, fg_order integer,fg_create_time datetime)");
 
             db.execSQL("create table db_friends(f_id integer primary key autoincrement, " +
-                    "f_name varchar, f_label varchar,f_create_time datetime )");
+                    "f_name varchar, f_label varchar,f_account varchar,f_create_time datetime )");
 
             db.execSQL("CREATE TABLE db_relationship (rfriend_id INTEGER,rgroup_id INTEGER, " +
                     "PRIMARY KEY (rfriend_id, rgroup_id), " +

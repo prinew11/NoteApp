@@ -20,8 +20,12 @@ import android.content.SharedPreferences;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.ArrayList;
+
+import be.kuleuven.gt.app3.ForGroup.FriendUnit;
 import be.kuleuven.gt.app3.R;
 import be.kuleuven.gt.app3.storeAndupdate.getDataFromDB;
+import be.kuleuven.gt.app3.storeAndupdate.storeNote;
 
 
 public class Profile extends Fragment {
@@ -33,12 +37,14 @@ public class Profile extends Fragment {
     private TextInputEditText usernameEditText, passwordEditText;
     private TextView registerTextView;
     private Button loginButton, registerButton;
-    private TextInputLayout registerUsernameLayout, registerPasswordLayout;
-    private TextInputEditText registerUsernameEditText, registerPasswordEditText;
+    private TextInputLayout registerUsernameLayout, registerPasswordLayout,registerAccountLayout;
+    private TextInputEditText registerUsernameEditText, registerPasswordEditText,registerAccountEditText;
     private getDataFromDB getDataFromDB;
+    private storeNote storeNote;
     private static final String PREFS_NAME = "login_prefs";
     private static final String KEY_IS_LOGGED_IN = "is_logged_in";
     private static final String KEY_USERNAME = "username";
+    private static final String KEY_ONLINEID = "onlineID";
 
     public Profile() {
         // Required empty public constructor
@@ -66,14 +72,15 @@ public class Profile extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        Log.i("taggg","tesst1");
         view = inflater.inflate(R.layout.fragment_profile, container, false);
         initData();
 
-        if (isLoggedIn(getContext())) {
+        if (isLoggedIn()) {
             // Perform actions as needed, such as navigating to the user's profile page
-            String username = getUsername(getContext());
-            Toast.makeText(getContext(), "Welcome back, " + username + "!", Toast.LENGTH_SHORT).show();
+            String username = getUsername();
+            int online = getOnlineID();
+            Toast.makeText(getContext(), "Welcome back, " + online + "!", Toast.LENGTH_SHORT).show();
         }
 
 
@@ -117,6 +124,7 @@ public class Profile extends Fragment {
         setHasOptionsMenu(true);
         toolbar.inflateMenu(R.menu.menu_profile);
         getDataFromDB = new getDataFromDB();
+        storeNote = new storeNote(getContext());
 
         usernameLayout = view.findViewById(R.id.usernameLayout);
         passwordLayout = view.findViewById(R.id.passwordLayout);
@@ -128,6 +136,8 @@ public class Profile extends Fragment {
         registerPasswordLayout = view.findViewById(R.id.registerPasswordLayout);
         registerUsernameEditText = view.findViewById(R.id.registerUsernameEditText);
         registerPasswordEditText = view.findViewById(R.id.registerPasswordEditText);
+        registerAccountEditText = view.findViewById(R.id.registerAccountEditText);
+        registerAccountLayout = view.findViewById(R.id.registerAccountLayout);
         registerButton = view.findViewById(R.id.registerButton);
 
     }
@@ -136,10 +146,12 @@ public class Profile extends Fragment {
         if (registerUsernameLayout.getVisibility() == View.GONE) {
             registerUsernameLayout.setVisibility(View.VISIBLE);
             registerPasswordLayout.setVisibility(View.VISIBLE);
+            registerAccountLayout.setVisibility(View.VISIBLE);
             registerButton.setVisibility(View.VISIBLE);
         } else {
             registerUsernameLayout.setVisibility(View.GONE);
             registerPasswordLayout.setVisibility(View.GONE);
+            registerAccountLayout.setVisibility(View.GONE);
             registerButton.setVisibility(View.GONE);
         }
     }
@@ -148,43 +160,74 @@ public class Profile extends Fragment {
         String username = usernameEditText.getText().toString();
         String password = passwordEditText.getText().toString();
 
-        // Add your login logic here
-        // For example, authenticate with your server or database
-        getDataFromDB.Login(getContext(),"account",password);
-        saveLoginState(getContext(), username);
-        Toast.makeText(getContext(), "Logging in...", Toast.LENGTH_SHORT).show();
+        getDataFromDB.Login(getContext(), username, password, new getDataFromDB.LoginCallback() {
+            @Override
+            public void onSuccess(int onlineID) {
+                Toast.makeText(getContext(), "success", Toast.LENGTH_SHORT).show();
+                saveLoginState(username,onlineID);
+                getDataFromDB.getUserFullinfo(getContext(), onlineID, new getDataFromDB.infoBack() {
+                    @Override
+                    public void onSuccess(ArrayList<FriendUnit> friends) {
+                        for(FriendUnit friend:friends){
+                            storeNote.addNewFriends(friend);
+                        }
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                       Log.i("taggg","error set friend list");
+                    }
+                });
+                storeNote.refreshGroupAndFriend();
+            }
+
+            @Override
+            public void onFailure() {
+                Toast.makeText(getContext(), "failure", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
     }
 
     private void register() {
         String username = registerUsernameEditText.getText().toString();
         String password = registerPasswordEditText.getText().toString();
+        String account =  registerAccountEditText.getText().toString();
 
         // Add your registration logic here
         // For example, save the new user to your server or database
+        getDataFromDB.Register(getContext(),username,password,account);
 
-        Toast.makeText(getContext(), "Registering...", Toast.LENGTH_SHORT).show();
     }
 
 
 
 
-    public String getUsername(Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+    public String getUsername() {
+        Log.i("taggg","tesst2");
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         return sharedPreferences.getString(KEY_USERNAME, null);
     }
 
 
-    public void saveLoginState(Context context, String username) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+    public void saveLoginState(String username,int onlineID) {
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(KEY_IS_LOGGED_IN, true);
         editor.putString(KEY_USERNAME, username);
+        editor.putInt(KEY_ONLINEID,onlineID);
         editor.apply();
     }
 
-    public boolean isLoggedIn(Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+    public boolean isLoggedIn() {
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         return sharedPreferences.getBoolean(KEY_IS_LOGGED_IN, false);
+    }
+
+    public int getOnlineID(){
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return sharedPreferences.getInt(KEY_ONLINEID, 0);
     }
 
     public void logout(Context context) {

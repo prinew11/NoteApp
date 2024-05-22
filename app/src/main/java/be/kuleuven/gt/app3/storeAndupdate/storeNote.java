@@ -144,33 +144,6 @@ public class storeNote {
         return ret;
     }
 
-    //delete lots of note
-    public int deleteNote(ArrayList<NoteUnit> mNotes) {
-        SQLiteDatabase db = liteDatabase.getWritableDatabase();
-        int ret = 0;
-        try {
-            if (mNotes != null && mNotes.size() > 0) {
-                db.beginTransaction();//begin
-                try {
-                    for (NoteUnit note : mNotes) {
-                        ret += db.delete("db_note", "n_id=?", new String[]{note.getId() + ""});
-                    }
-                    db.setTransactionSuccessful();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    db.endTransaction();
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (db != null) {
-                db.close();
-            }
-        }
-        return ret;
-    }
 
     @SuppressLint("Range")
     public ArrayList<NoteUnit> searchNote(String query){
@@ -221,7 +194,7 @@ public class storeNote {
 
     public long addNewFriends(FriendUnit friend) {
         SQLiteDatabase db = liteDatabase.getWritableDatabase();
-        String friendSql = "INSERT INTO db_friends(f_name, f_label, f_create_time) VALUES (?, ?, ?)";
+        String friendSql = "INSERT INTO db_friends(f_name, f_label,f_account ,f_create_time) VALUES (?, ?, ?, ?)";
         String relationshipSql = "INSERT INTO db_relationship(rfriend_id, rgroup_id) VALUES (?, ?)";
         long ret = 0;
         db.beginTransaction();
@@ -230,7 +203,8 @@ public class storeNote {
             SQLiteStatement friendStat = db.compileStatement(friendSql);
             friendStat.bindString(1, friend.getName());
             friendStat.bindString(2, friend.getLabel());
-            friendStat.bindString(3, ForString.date2string(new Date()));
+            friendStat.bindString(3, friend.getAccount());
+            friendStat.bindString(4, ForString.date2string(new Date()));
 
             // Insert new friend
             ret = friendStat.executeInsert();
@@ -322,7 +296,7 @@ public class storeNote {
                 groupUnit.setDate(groupCursor.getString(groupCursor.getColumnIndex("fg_create_time")));
 
                 // 获取该组的所有好友信息
-                String friendSql = "SELECT db_friends.f_id, db_friends.f_name, db_friends.f_label, db_friends.f_create_time " +
+                String friendSql = "SELECT db_friends.f_id, db_friends.f_name, db_friends.f_label, db_friends.f_account,db_friends.f_create_time " +
                         "FROM db_friends " +
                         "JOIN db_relationship ON db_friends.f_id = db_relationship.rfriend_id " +
                         "WHERE db_relationship.rgroup_id = ?";
@@ -334,6 +308,7 @@ public class storeNote {
                     friendUnit.setID(friendCursor.getInt(friendCursor.getColumnIndex("f_id")));
                     friendUnit.setName(friendCursor.getString(friendCursor.getColumnIndex("f_name")));
                     friendUnit.setLable(friendCursor.getString(friendCursor.getColumnIndex("f_label")));
+                    friendUnit.setAccount(friendCursor.getString(friendCursor.getColumnIndex("f_account")));
                     friendUnit.setTime(friendCursor.getString(friendCursor.getColumnIndex("f_create_time")));
                     friends.add(friendUnit);
                 }
@@ -361,5 +336,24 @@ public class storeNote {
         return Groups;
     }
 
+    public void refreshGroupAndFriend(){
+        SQLiteDatabase db = liteDatabase.getWritableDatabase();
+        try {
+            db.execSQL("DELETE FROM db_friendsgroup");
+            db.execSQL("DELETE FROM db_friends");
+            db.execSQL("DELETE FROM db_relationship");
+            String fgName = "AllFriends";
+            int fgOrder = 1;
+            String fgCreateTime = ForString.date2string(new Date());
+
+            String insertQuery = "INSERT INTO db_friendsgroup(fg_id,fg_name, fg_order, fg_create_time) VALUES (?, ?, ?, ?)";
+            db.execSQL(insertQuery, new Object[]{1,fgName, fgOrder, fgCreateTime});
+            Log.i("taggg", "Table " + " cleared.");
+        } catch (Exception e) {
+            Log.e("taggg", "Error clearing table ", e);
+        } finally {
+            db.close();
+        }
+    }
 
 }

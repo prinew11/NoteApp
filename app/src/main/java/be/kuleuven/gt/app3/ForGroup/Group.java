@@ -61,25 +61,22 @@ public class Group extends Fragment {
         Log.i("Taggg","onCreateOptionsMenu");
         inflater.inflate(R.menu.menu_group, menu);
         super.onCreateOptionsMenu(menu, inflater);
+        refreshList();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        Log.i("Taggg","1");
         view = inflater.inflate(R.layout.fragment_group, container, false);
         initdata();
-
-        // 初始化适配器并设置给 ListView
-        //init adapter and set it to listView
-        groupAdapter = new GroupAdapter(getContext(), Groups);
-        listView.setAdapter(groupAdapter);
 
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.group_add) {
-//                    addFriend();
+
                     getActivity().getSupportFragmentManager().beginTransaction()
                             .replace(R.id.frame,new addFriendPage(),null).addToBackStack(null)
                             .commit();
@@ -98,6 +95,8 @@ public class Group extends Fragment {
         toolbar.inflateMenu(R.menu.menu_group);
         listView = view.findViewById(R.id.listview_group);
         Groups = storeNote.getAllGroupInfo();
+        groupAdapter = new GroupAdapter(getContext(), Groups);
+        listView.setAdapter(groupAdapter);
     }
 
     public void refreshList(){
@@ -106,13 +105,6 @@ public class Group extends Fragment {
         groupAdapter.notifyDataSetChanged();
     }
 
-    public void addFriend(){
-        FriendUnit f = new FriendUnit();
-        f.setLable("");
-        f.setName("name");
-        storeNote.addNewFriends(f);
-        refreshList();
-    }
 
 
 
