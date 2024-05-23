@@ -24,7 +24,7 @@ import be.kuleuven.gt.app3.storeAndupdate.storeNote;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Fragment[] frags = new Fragment[4];
+    private Fragment[] frags = new Fragment[3];
     private BottomNavigationView Bottomnav;
     private int fragFlag = 0;
 
@@ -50,8 +50,8 @@ public class MainActivity extends AppCompatActivity {
     private void initFragment(){
         frags[0] = new Note();
         frags[1] = new Group();
-        frags[2] = new Canlader();
-        frags[3] = new Profile();
+        //frags[2] = new Canlader();
+        frags[2] = new Profile();
 
         initLoadFragment(R.id.frame,0,frags);
     }
@@ -83,13 +83,13 @@ public class MainActivity extends AppCompatActivity {
                 showAndHideFragment(frags[1],frags[fragFlag]);
                 fragFlag = 1;
             }
-            else if (menuItem.getItemId() == R.id.Item3) {
+//            else if (menuItem.getItemId() == R.id.Item3) {
+//                showAndHideFragment(frags[2],frags[fragFlag]);
+//                fragFlag = 2;
+//            }
+            else if (menuItem.getItemId() == R.id.Item4) {
                 showAndHideFragment(frags[2],frags[fragFlag]);
                 fragFlag = 2;
-            }
-            else if (menuItem.getItemId() == R.id.Item4) {
-                showAndHideFragment(frags[3],frags[fragFlag]);
-                fragFlag = 3;
             }
 
             return true;

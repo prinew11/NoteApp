@@ -17,11 +17,11 @@
         android:enabled="true"
         app:showAsAction="always"
         />
-    <item android:id="@+id/Item3"
-        android:icon="@android:drawable/ic_dialog_dialer"
-        android:title="@string/Canlader"
-        app:showAsAction="always"
-        />
+<!--    <item android:id="@+id/Item3"-->
+<!--        android:icon="@android:drawable/ic_dialog_dialer"-->
+<!--        android:title="@string/Canlader"-->
+<!--        app:showAsAction="always"-->
+<!--        />-->
     <item android:id="@+id/Item4"
         android:icon="@android:drawable/ic_dialog_dialer"
         android:title="@string/Myprofile"

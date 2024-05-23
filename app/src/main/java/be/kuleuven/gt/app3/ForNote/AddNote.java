@@ -10,6 +10,7 @@ import static androidx.core.content.ContextCompat.getSystemService;
 import android.content.Intent;
 import android.os.Bundle;
 
+import java.io.IOException;
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -123,6 +124,9 @@ public class AddNote extends Fragment{
                     getActivity().getSupportFragmentManager().beginTransaction()
                             .replace(R.id.frame, noteInfo,null).addToBackStack(null)
                             .commit();
+                } else if (item.getItemId() == R.id.polish) {
+                    Log.i("taggg","polish");
+
                 }
                 return false;
             }
@@ -237,8 +241,69 @@ public class AddNote extends Fragment{
         word.setText(noteUnit.getContent());
     }
 
+    public void polish(){
 
 
+    }
+
+    private String getSelectedText() {
+        int min = word.getSelectionStart();
+        int max = word.getSelectionEnd();
+        if (min == -1 || max == -1) {
+            Toast.makeText(getContext(), "Please select some text", Toast.LENGTH_SHORT).show();
+            return "";
+        }
+        return word.getText().toString().substring(min, max);
+    }
+private void polishText(String text) {
+    OkHttpClient client = new OkHttpClient();
+    MediaType mediaType = MediaType.parse("application/json");
+
+    JSONObject jsonObject = new JSONObject();
+    try {
+        jsonObject.put("model", "text-davinci-003");
+        jsonObject.put("prompt", "Polish the following text: " + text);
+        jsonObject.put("max_tokens", 100);
+    } catch (JSONException e) {
+        e.printStackTrace();
+    }
+
+    RequestBody body = RequestBody.create(mediaType, jsonObject.toString());
+    Request request = new Request.Builder()
+            .url(OPENAI_API_URL)
+            .post(body)
+            .addHeader("Authorization", "Bearer " + OPENAI_API_KEY)
+            .build();
+
+    client.newCall(request).enqueue(new Callback() {
+        @Override
+        public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+            if (response.isSuccessful() && response.body() != null) {
+                String responseBody = response.body().string();
+                try {
+                    JSONObject jsonResponse = new JSONObject(responseBody);
+                    String polishedText = jsonResponse.getJSONArray("choices")
+                            .getJSONObject(0)
+                            .getString("text");
+                    runOnUiThread(() -> {
+                        textView.setText(polishedText);
+                        Toast.makeText(MainActivity.this, "Text polished successfully", Toast.LENGTH_SHORT).show();
+                    });
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                runOnUiThread(() -> Toast.makeText(MainActivity.this, "Failed to polish text", Toast.LENGTH_SHORT).show());
+            }
+        }
+
+        @Override
+        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+            e.printStackTrace();
+            runOnUiThread(() -> Toast.makeText(MainActivity.this, "Network error", Toast.LENGTH_SHORT).show());
+        }
+    });
+}
 
 
 
