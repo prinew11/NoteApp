@@ -194,7 +194,7 @@ public class storeNote {
 
     public long addNewFriends(FriendUnit friend) {
         SQLiteDatabase db = liteDatabase.getWritableDatabase();
-        String friendSql = "INSERT INTO db_friends(f_name, f_label,f_account ,f_create_time) VALUES (?, ?, ?, ?)";
+        String friendSql = "INSERT INTO db_friends(f_name, f_label,f_account,f_onlineID ,f_create_time) VALUES (?, ?, ?, ?, ?)";
         String relationshipSql = "INSERT INTO db_relationship(rfriend_id, rgroup_id) VALUES (?, ?)";
         long ret = 0;
         db.beginTransaction();
@@ -204,12 +204,13 @@ public class storeNote {
             friendStat.bindString(1, friend.getName());
             friendStat.bindString(2, friend.getLabel());
             friendStat.bindString(3, friend.getAccount());
-            friendStat.bindString(4, ForString.date2string(new Date()));
+            friendStat.bindLong(4, friend.getOnlineID());
+            Log.i("taggg","store online id:"+friend.getOnlineID());
+            friendStat.bindString(5, ForString.date2string(new Date()));
 
-            // Insert new friend
             ret = friendStat.executeInsert();
 
-            // If the friend was successfully inserted, add to default group (assuming default group id is 1)
+            // If the friend was successfully inserted, add to default group (default group id is 1)
             if (ret != -1) {
                 SQLiteStatement relationshipStat = db.compileStatement(relationshipSql);
                 relationshipStat.bindLong(1, ret); // Use the newly inserted friend's ID
@@ -282,11 +283,9 @@ public class storeNote {
         Cursor friendCursor = null;
 
         try {
-            // 获取所有组的信息
             String groupSql = "SELECT * FROM db_friendsgroup ORDER BY fg_create_time ASC";
             groupCursor = db.rawQuery(groupSql, null);
 
-            // 遍历每个组
             while (groupCursor.moveToNext()) {
                 GroupUnit groupUnit = new GroupUnit();
                 int groupId = groupCursor.getInt(groupCursor.getColumnIndex("fg_id"));
@@ -296,7 +295,7 @@ public class storeNote {
                 groupUnit.setDate(groupCursor.getString(groupCursor.getColumnIndex("fg_create_time")));
 
                 // 获取该组的所有好友信息
-                String friendSql = "SELECT db_friends.f_id, db_friends.f_name, db_friends.f_label, db_friends.f_account,db_friends.f_create_time " +
+                String friendSql = "SELECT db_friends.f_id, db_friends.f_name, db_friends.f_label, db_friends.f_account,db_friends.f_onlineID,db_friends.f_create_time " +
                         "FROM db_friends " +
                         "JOIN db_relationship ON db_friends.f_id = db_relationship.rfriend_id " +
                         "WHERE db_relationship.rgroup_id = ?";
@@ -309,6 +308,7 @@ public class storeNote {
                     friendUnit.setName(friendCursor.getString(friendCursor.getColumnIndex("f_name")));
                     friendUnit.setLable(friendCursor.getString(friendCursor.getColumnIndex("f_label")));
                     friendUnit.setAccount(friendCursor.getString(friendCursor.getColumnIndex("f_account")));
+                    friendUnit.setOnlineID(friendCursor.getInt(friendCursor.getColumnIndex("f_onlineID")));
                     friendUnit.setTime(friendCursor.getString(friendCursor.getColumnIndex("f_create_time")));
                     friends.add(friendUnit);
                 }

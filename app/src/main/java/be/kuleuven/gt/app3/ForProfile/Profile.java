@@ -169,6 +169,7 @@ public class Profile extends Fragment {
                     @Override
                     public void onSuccess(ArrayList<FriendUnit> friends) {
                         for(FriendUnit friend:friends){
+                            Log.i("taggg","addnewfriend online id:"+friend.getOnlineID());
                             storeNote.addNewFriends(friend);
                         }
                     }

@@ -2,6 +2,7 @@ package be.kuleuven.gt.app3.ForNote;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
@@ -26,14 +27,25 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.json.JSONArray;
+
 import java.util.ArrayList;
 
+import be.kuleuven.gt.app3.ForGroup.FriendUnit;
+import be.kuleuven.gt.app3.ForGroup.addFriendPage;
 import be.kuleuven.gt.app3.MainActivity;
 import be.kuleuven.gt.app3.R;
 import be.kuleuven.gt.app3.ForData.SpaceItem;
+import be.kuleuven.gt.app3.storeAndupdate.getDataFromDB;
 import be.kuleuven.gt.app3.storeAndupdate.storeNote;
 
 /**
@@ -59,6 +71,7 @@ public class Note extends Fragment implements AddNote.passData {
     private boolean doubleBackToExitPressedOnce = false;
     private boolean isSearch;
     private View overlay;
+    private getDataFromDB getDataFromDB;
     private ArrayList<NoteUnit> select;
 
 
@@ -68,7 +81,6 @@ public class Note extends Fragment implements AddNote.passData {
         // Required empty public constructor
     }
 
-    // TODO: Rename and change types and number of parameters
     public static Note newInstance() {
         Note fragment = new Note();
         Bundle args = new Bundle();
@@ -109,6 +121,8 @@ public class Note extends Fragment implements AddNote.passData {
                 }else if (item.getItemId() == R.id.selectAll) {
                     selectAll();
                     Log.i("Taggg","selectAllclick");
+                } else if (item.getItemId() == R.id.refresh) {
+                    receive();
                 }
                 return false;
             }
@@ -121,6 +135,7 @@ public class Note extends Fragment implements AddNote.passData {
                     deleteNote();
                 }
                 else if (menuItem.getItemId()==R.id.share) {
+                    shareNote();
 
                 }
                 else if(menuItem.getItemId()==R.id.setTop){
@@ -309,6 +324,7 @@ public class Note extends Fragment implements AddNote.passData {
         toolbar1.inflateMenu(R.menu.menu_list);
         Log.i("taggg","delete"+isDelete);
         Log.i("taggg","search"+isSearch);
+        getDataFromDB = new getDataFromDB();
 
         if(isSearch){
             searchMode();
@@ -434,7 +450,64 @@ public class Note extends Fragment implements AddNote.passData {
 
     }
 
+    public void receive(){
+        int localID = getActivity().getSharedPreferences("login_prefs", Context.MODE_PRIVATE).getInt("onlineID", 0);
+        Log.i("taggg",localID+"");
+        getDataFromDB.receiveNote(getContext(), localID, new getDataFromDB.receiveBack() {
+            @Override
+            public void onSuccess(NoteUnit note,String friendName) {
+                if(!note.getContent().isEmpty()||!note.getTitle().isEmpty()){
+                note.setTitle("From "+friendName+": "+note.getTitle());
+                note.setContent(note.getContent());
+                storeNote.insertNote(note);
+                refreshNote();
+                getDataFromDB.receiveNote(getContext(),localID);}
+            }
 
+            @Override
+            public void onError(String error) {
+               Log.i("taggg","nothing");
+            }
+        });
+
+
+    }
+
+    public void shareNoteWithFriend(int friendId){
+        int localID = getActivity().getSharedPreferences("login_prefs", Context.MODE_PRIVATE).getInt("onlineID", 0);
+        select = adapter.getSelect();
+        if (select != null && !select.isEmpty()) {
+            for(int i=0;i<select.size();i++) {
+                NoteUnit note = select.get(i); // 假设一次只分享一个笔记
+                Log.i("taggg", "shared title:" + select.get(i).getTitle());
+                Log.i("taggg", "shared context:" + select.get(i).getContent());
+                getDataFromDB.shareNoteToFriend(getContext(), localID, friendId, note);
+            }
+        }
+    }
+
+
+    public void shareNote() {
+        select = adapter.getSelect();
+        if (select != null && !select.isEmpty()) {
+            shareFriend fragment = new shareFriend();
+            fragment.setOnFriendSelectedListener(new shareFriend.OnFriendSelectedListener() {
+                @Override
+                public void onFriendSelected(ArrayList<FriendUnit> friends) {
+                    Log.i("taggg","select size from note:"+friends.size());
+                    for(int i =0;i<friends.size();i++) {
+                        Log.i("taggg","friend id:"+friends.get(i).getOnlineID());
+                        shareNoteWithFriend(friends.get(i).getOnlineID());
+                    }
+                }
+            }); // Set the listener
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.frame, fragment, null).addToBackStack(null)
+                    .commit();
+        } else {
+            Toast.makeText(getContext(), "Please select a note to share", Toast.LENGTH_SHORT).show();
+        }
+    }
 
 
 

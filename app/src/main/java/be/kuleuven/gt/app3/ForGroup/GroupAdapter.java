@@ -59,24 +59,24 @@ public class GroupAdapter extends BaseAdapter {
         Log.i("taggg","num+1");
         ViewHolder holder = null;
 //        if(convertView == null){
-            convertView = LayoutInflater.from(context).inflate(R.layout.grouptextview,parent,false);
-            holder = new ViewHolder(convertView);
-            for(FriendUnit friendUnit : groups.get(position).getFriends()){
-                View friendItemView = LayoutInflater.from(context).inflate(R.layout.groupitembar,
-                        holder.friendsContainer, false);
-                TextView friendName = friendItemView.findViewById(R.id.ItemName);
-                friendName.setText(friendUnit.getName());
-                friendItemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Log.i("taggg","click");
-                    }
-                });
+        convertView = LayoutInflater.from(context).inflate(R.layout.grouptextview,parent,false);
+        holder = new ViewHolder(convertView);
+        for(FriendUnit friendUnit : groups.get(position).getFriends()){
+            View friendItemView = LayoutInflater.from(context).inflate(R.layout.groupitembar,
+                    holder.friendsContainer, false);
+            TextView friendName = friendItemView.findViewById(R.id.ItemName);
+            friendName.setText(friendUnit.getName());
+            friendItemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.i("taggg","click");
+                }
+            });
 
-                // Add the friend item view to the friendsContainer
-                holder.friendsContainer.addView(friendItemView);
-            }
-            convertView.setTag(holder);
+            // Add the friend item view to the friendsContainer
+            holder.friendsContainer.addView(friendItemView);
+        }
+        convertView.setTag(holder);
 //        }
 //        else{
 //            holder = (ViewHolder) convertView.getTag();
@@ -112,7 +112,7 @@ public class GroupAdapter extends BaseAdapter {
 
         return convertView;
     }
-    
+
 
 
 

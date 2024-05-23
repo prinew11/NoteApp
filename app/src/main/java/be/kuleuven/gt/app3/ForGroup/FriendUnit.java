@@ -5,7 +5,8 @@ public class FriendUnit {
     private String name;
     private String label;
     private String time;
-
+    private int position;
+    private int onlineID;
     private int ID;
     private String account;
 
@@ -39,7 +40,12 @@ public class FriendUnit {
     public void setAccount(String account){this.account = account;}
 
     public String getAccount(){return account;}
+    public int getPosition(){return position;}
+    public void setPosition(int position){this.position = position;}
 
+    public void setOnlineID(int onlineID){this.onlineID = onlineID;}
+
+    public int getOnlineID(){return onlineID;}
 
 
 }

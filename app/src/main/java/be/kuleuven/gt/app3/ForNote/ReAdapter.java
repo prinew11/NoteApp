@@ -144,7 +144,7 @@ public class ReAdapter extends RecyclerView.Adapter<ReAdapter.myViewHolder> {
 
     @Override
     public void onBindViewHolder(myViewHolder holder, int position) {
-        Log.i("taggg","init1");
+        Log.i("taggg","inittimefrofor");
         final NoteUnit noteUnit = Notes.get(position);
         noteUnit.setPosition(position);// set the note's position in the arraylist
         //data store in itemView's Tag，click it to get the data

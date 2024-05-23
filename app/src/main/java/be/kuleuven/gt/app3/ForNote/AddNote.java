@@ -108,10 +108,7 @@ public class AddNote extends Fragment{
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                if(item.getItemId() == R.id.addPicture){
-                    Log.i("Taggg","addPicture");
-                    callGallery();
-                } else if (item.getItemId() == R.id.editIcon1) {
+                if (item.getItemId() == R.id.editIcon1) {
                     setInfo();
 
                     Bundle bundle1 = new Bundle();

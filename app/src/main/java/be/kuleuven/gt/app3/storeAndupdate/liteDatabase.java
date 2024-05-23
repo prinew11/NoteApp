@@ -37,7 +37,7 @@ public class liteDatabase extends SQLiteOpenHelper{
                     "fg_name varchar, fg_order integer,fg_create_time datetime)");
 
             db.execSQL("create table db_friends(f_id integer primary key autoincrement, " +
-                    "f_name varchar, f_label varchar,f_account varchar,f_create_time datetime )");
+                    "f_name varchar, f_label varchar,f_account varchar,f_onlineID integer,f_create_time datetime )");
 
             db.execSQL("CREATE TABLE db_relationship (rfriend_id INTEGER,rgroup_id INTEGER, " +
                     "PRIMARY KEY (rfriend_id, rgroup_id), " +

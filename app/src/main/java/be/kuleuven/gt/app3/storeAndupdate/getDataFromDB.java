@@ -60,7 +60,7 @@ public class getDataFromDB {
                             }
                             FriendUnit friend = new FriendUnit();
                             friend.setName(name);
-                            friend.setID(id);
+                            friend.setOnlineID(id);
                             friend.setAccount(account);
                             dataCallback.onSuccess(friend);
                         }
@@ -225,7 +225,7 @@ public class getDataFromDB {
                                 account = curObject.getString("account_user");
                                 FriendUnit friend = new FriendUnit();
                                 friend.setName(name);
-                                friend.setID(id);
+                                friend.setOnlineID(id);
                                 friend.setAccount(account);
                                 friends.add(friend);
                             }
@@ -256,38 +256,9 @@ public class getDataFromDB {
 
     }
 
-    public void shareNote(Context context,int localID, int recieverId, NoteUnit note){
-
-        requestQueue = Volley.newRequestQueue(context);
-        String requestURL = "https://studev.groept.be/api/a23PT315/shareNote/"+localID+"/"+recieverId+"/"+note.getTitle()+"/"+note.getContent();
-        JsonArrayRequest submitRequest = new JsonArrayRequest(Request.Method.GET, requestURL, null,
-
-                new Response.Listener<JSONArray>()
-                {
-                    @Override
-                    public void onResponse(JSONArray response)
-                    {
-                        Log.i("taggg", "Send！");
-                    }
-                },
-
-                new Response.ErrorListener()
-                {
-                    @Override
-                    public void onErrorResponse(VolleyError error)
-                    {
-                        Log.e("taggg", "Error: " + error.toString());
-
-                    }
-                }
-        );
-
-        requestQueue.add(submitRequest);
-
-    }
 
     public interface receiveBack{
-        void onSuccess(NoteUnit noteUnit);
+        void onSuccess(NoteUnit noteUnit,String sendName);
         void onError(String error);
 
     }
@@ -305,17 +276,20 @@ public class getDataFromDB {
                         try {
                             String title="";
                             String context="";
+                            String sender="";
                             for( int i = 0; i < response.length(); i++ )
                             {
                                 JSONObject curObject = response.getJSONObject( i );
                                 title = curObject.getString("note_title");
                                 context = curObject.getString("note_context");
+                                sender = curObject.getString("name_user");
                             }
 
                             NoteUnit note = new NoteUnit();
-                            note.setContent(context);
                             note.setTitle(title);
-                            receiveBack.onSuccess(note);
+                            note.setContent(context);
+                            Log.i("taggg","::"+note.getContent());
+                            receiveBack.onSuccess(note,sender);
                         }
                         catch( JSONException e )
                         {
@@ -323,7 +297,32 @@ public class getDataFromDB {
                             receiveBack.onError("error");
                         }
 
-                        Log.i("taggg", "receive!！");
+                    }
+                },
+
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error)
+                    {
+                        Log.e("taggg", "Error: " + error.toString());
+
+                    }
+                }
+        );
+
+        requestQueue.add(submitRequest);
+    }
+    public void receiveNote(Context context,int localID){
+        requestQueue = Volley.newRequestQueue(context);
+        String requestURL = "https://studev.groept.be/api/a23PT315/setRecieve/"+localID;
+        JsonArrayRequest submitRequest = new JsonArrayRequest(Request.Method.GET, requestURL, null,
+                new Response.Listener<JSONArray>()
+                {
+                    @Override
+                    public void onResponse(JSONArray response)
+                    {
+                        Log.i("taggg", "success");
                     }
                 },
 
@@ -341,5 +340,37 @@ public class getDataFromDB {
         requestQueue.add(submitRequest);
     }
 
+    public void shareNoteToFriend(Context context, int localID, int receiverId, NoteUnit note) {
+        requestQueue = Volley.newRequestQueue(context);
+        String title = note.getTitle();
+        String content = note.getContent();
+        if(title.isEmpty()){title = "null";}
+        if(content.isEmpty()){content="null";}
 
+        String requestURL = "https://studev.groept.be/api/a23PT315/shareNote/" + localID + "/" + receiverId + "/" + title + "/" + content;
+
+        Log.i("taggg","url: "+requestURL);
+        JsonArrayRequest submitRequest = new JsonArrayRequest(Request.Method.GET, requestURL, null,
+                new Response.Listener<JSONArray>()
+                {
+                    @Override
+                    public void onResponse(JSONArray response)
+                    {
+                        Log.i("taggg", "Send!");
+                    }
+                },
+
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error)
+                    {
+                        Log.e("taggg", "Error: " + error.toString());
+
+                    }
+                }
+        );
+
+        requestQueue.add(submitRequest);
+    }
 }

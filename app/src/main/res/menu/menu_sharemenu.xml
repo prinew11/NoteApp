@@ -3,8 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/editIcon1"
-        android:icon="@android:drawable/ic_menu_edit"
-        android:title="Edit"
+        android:id="@+id/share2friend"
+        android:icon="@android:drawable/ic_menu_share"
+        android:title="share"
         app:showAsAction="always" />
 </menu>

@@ -48,8 +48,8 @@ public class NoteUnit implements Serializable{
         return content;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setContent(String context) {
+        this.content = context;
     }
 
     public int getGroupId() {
